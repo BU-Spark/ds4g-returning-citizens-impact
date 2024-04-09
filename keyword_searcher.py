@@ -38,7 +38,7 @@ def get_fiscal_year(date_str):
 """new registration"""
 
 
-file_new = 'New_registration.csv'
+file_new = 'cleaned_data/New_registration.csv'
 df_new = pd.read_csv(file_new)
 
 # Filter out rows where 'Services Requested and Offered' is blank
@@ -74,7 +74,7 @@ if "Date_of_Enrollment" in df_new.columns:
 """Robert"""
 
 
-file_Robert = 'Robert.csv'
+file_Robert = 'cleaned_data/Robert.csv'
 df_Robert = pd.read_csv(file_Robert) 
 
 # Initialize a dictionary to count appearances
@@ -107,7 +107,7 @@ if "Date_of_Enrollment" in df_Robert.columns:
 """Dominique"""
 
 
-file_Dom = 'Dominique.csv'
+file_Dom = 'cleaned_data/Dominique.csv'
 df_Dom = pd.read_csv(file_Dom)
 
 # Initialize a dictionary to count appearances
@@ -140,7 +140,7 @@ if "Date_of_Enrollment" in df_Dom.columns:
 """Divad"""
 
 
-file_Divad = 'Divad.csv'
+file_Divad = 'cleaned_data/Divad.csv'
 df_Divad = pd.read_csv(file_Divad)
 
 # Initialize a dictionary to count appearances
@@ -173,7 +173,7 @@ if "Date_of_Enrollment" in df_Divad.columns:
 """Rachelle"""
 
 
-file_Rachelle = 'Rachelle.csv'
+file_Rachelle = 'cleaned_data/Rachelle.csv'
 df_Rachelle = pd.read_csv(file_Rachelle)
 
 # Initialize a dictionary to count appearances
@@ -206,7 +206,7 @@ if "Date_of_Enrollment" in df_Rachelle.columns:
 """Khalid"""
 
 
-file_Khalid = 'Khalid.csv'
+file_Khalid = 'cleaned_data/Khalid.csv'
 df_Khalid = pd.read_csv(file_Khalid) 
 
 # Initialize a dictionary to count appearances
@@ -239,7 +239,7 @@ if "Date_of_Enrollment" in df_Khalid.columns:
 """SandyHousing"""
 
 
-file_Sandy = 'SandyHousing.csv'
+file_Sandy = 'cleaned_data/SandyHousing.csv'
 df_Sandy = pd.read_csv(file_Sandy)
 
 # Initialize a dictionary to count appearances
@@ -272,7 +272,7 @@ if "Date_of_Enrollment" in df_Sandy.columns:
 """Incarcerated_waitlist"""
 
 
-file_incarcerated = 'Incarcerated_waitlist.csv'
+file_incarcerated = 'cleaned_data/Incarcerated_waitlist.csv'
 df_incarcerated = pd.read_csv(file_incarcerated)
 
 # Initialize a dictionary to count appearances
@@ -305,7 +305,7 @@ if "Date_of_Enrollment" in df_incarcerated.columns:
 """Inactive"""
 
 
-file_inactive = 'Inactive.csv'
+file_inactive = 'cleaned_data/Inactive.csv'
 df_inactive = pd.read_csv(file_inactive)
 
 # Initialize a dictionary to count appearances
@@ -338,7 +338,7 @@ if "Date_of_Enrollment" in df_inactive.columns:
 """Low_risk"""
 
 
-file_lowrisk = 'Low_risk.csv'
+file_lowrisk = 'cleaned_data/Low_risk.csv'
 df_lowrisk = pd.read_csv(file_lowrisk) 
 
 # Initialize a dictionary to count appearances
