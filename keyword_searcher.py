@@ -2,6 +2,7 @@ import pandas as pd
 import re
 import math
 import matplotlib.pyplot as plt 
+from datetime import datetime
 
 
 """
@@ -11,11 +12,27 @@ import matplotlib.pyplot as plt
     |
     |
    \ /
+    V
 """
 keywords = ['working credit', 'working families', 'greater boston legal services', 'lawyers clearing hous', 'prophetic resistance', 'CORI', 'case'] 
 
 
 #NO NEED TO CHANGE CODES BELOW
+"""-------------------------------------------------------------------------------------------------------------------------------------------------------"""
+"""Two Helper Functions."""
+
+# Function to count appearances of a keyword in a row
+def count_keyword_appearances(text, keyword):
+    return len(re.findall(keyword, text, re.IGNORECASE))
+
+# Helper function to determine the fiscal year from a date
+def get_fiscal_year(date_str):
+    date = datetime.strptime(date_str, "%m/%d/%y")
+    year = date.year
+    if date.month < 7:  # If before July, it belongs to the previous fiscal year
+        year -= 1
+    return f"FY{year}-{year+1}"
+
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
 """new registration"""
@@ -28,23 +45,29 @@ df_new = pd.read_csv(file_new)
 df_new = df_new[df_new['Services_Requested_and_Offered'].notna()]
 
 # Initialize a dictionary to count appearances
-keyword_counts_new = {keyword: 0 for keyword in keywords}
+keyword_counts_by_fiscal_year_new = {}
 
 # Initialize counter for total number of cases
 total_cases_new = 0
 
-# Function to count appearances of a keyword in a row
-def count_keyword_appearances(text, keyword):
-    return len(re.findall(keyword, text, re.IGNORECASE))
+if "Date_of_Enrollment" in df_new.columns:
+    for _, row in df_new.iterrows():
+        if row.isnull().all():
+            continue
+        total_cases_new += 1
+        date_str = row["Date_of_Enrollment"]
+        if pd.notnull(date_str):
+            fiscal_year = get_fiscal_year(date_str)
+        if fiscal_year not in keyword_counts_by_fiscal_year_new:
+            keyword_counts_by_fiscal_year_new[fiscal_year] = {keyword: 0 for keyword in keywords}
 
-# Iterate through each row in the dataframe
-for _, row in df_new.iterrows():
-    text = row['Services_Requested_and_Offered']
-    total_cases_new += 1  # Increment total cases for each non-blank row
-    for keyword in keywords:
-        appearances = count_keyword_appearances(text, keyword)
-        if appearances > 0:
-            keyword_counts_new[keyword] += 1
+        for column, text in row.items():  # Iterate through all columns
+            if pd.isnull(text) or column == "Date_of_Enrollment":
+                continue 
+            for keyword in keywords:
+                appearances = count_keyword_appearances(str(text), keyword)
+                if appearances > 0:
+                    keyword_counts_by_fiscal_year_new[fiscal_year][keyword] += 1
 
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
@@ -55,27 +78,29 @@ file_Robert = 'Robert.csv'
 df_Robert = pd.read_csv(file_Robert) 
 
 # Initialize a dictionary to count appearances
-keyword_counts_Rob = {keyword: 0 for keyword in keywords}
+keyword_counts_by_fiscal_year_Rob = {}
 
 # Initialize counter for total number of cases
 total_cases_Rob = 0
 
-# Function to count appearances of a keyword in a row
-def count_keyword_appearances(text, keyword):
-    return len(re.findall(keyword, text, re.IGNORECASE))
+if "Date_of_Enrollment" in df_Robert.columns:
+    for _, row in df_Robert.iterrows():
+        if row.isnull().all():
+            continue  
+        total_cases_Rob += 1
+        date_str = row["Date_of_Enrollment"]
+        if pd.notnull(date_str):
+            fiscal_year = get_fiscal_year(date_str)
+        if fiscal_year not in keyword_counts_by_fiscal_year_Rob:
+            keyword_counts_by_fiscal_year_Rob[fiscal_year] = {keyword: 0 for keyword in keywords}
 
-# Iterate through each row in the dataframe
-for _, row in df_Robert.iterrows():
-    if row.isnull().all():
-        continue  # Skip this row if it's entirely blank
-    total_cases_Rob += 1
-    for column, text in row.items():  # Iterate through all columns
-        if pd.isnull(text):
-            continue  # Skip null values
-        for keyword in keywords:
-            appearances = count_keyword_appearances(str(text), keyword)
-            if appearances > 0:
-                keyword_counts_Rob[keyword] += 1
+        for column, text in row.items():  # Iterate through all columns
+            if pd.isnull(text) or column == "Date_of_Enrollment":
+                continue
+            for keyword in keywords:
+                appearances = count_keyword_appearances(str(text), keyword)
+                if appearances > 0:
+                    keyword_counts_by_fiscal_year_Rob[fiscal_year][keyword] += 1
 
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
@@ -86,27 +111,29 @@ file_Dom = 'Dominique.csv'
 df_Dom = pd.read_csv(file_Dom)
 
 # Initialize a dictionary to count appearances
-keyword_counts_Dom = {keyword: 0 for keyword in keywords}
+keyword_counts_by_fiscal_year_Dom = {}
 
 # Initialize counter for total number of cases
 total_cases_Dom = 0
 
-# Function to count appearances of a keyword in a row
-def count_keyword_appearances(text, keyword):
-    return len(re.findall(keyword, text, re.IGNORECASE))
+if "Date_of_Enrollment" in df_Dom.columns:
+    for _, row in df_Dom.iterrows():
+        if row.isnull().all():
+            continue  
+        total_cases_Dom += 1
+        date_str = row["Date_of_Enrollment"]
+        if pd.notnull(date_str):
+            fiscal_year = get_fiscal_year(date_str)
+        if fiscal_year not in keyword_counts_by_fiscal_year_Dom:
+            keyword_counts_by_fiscal_year_Dom[fiscal_year] = {keyword: 0 for keyword in keywords}
 
-# Iterate through each row in the dataframe
-for _, row in df_Dom.iterrows():
-    if row.isnull().all():
-        continue  # Skip this row if it's entirely blank
-    total_cases_Dom += 1
-    for column, text in row.items():  # Iterate through all columns
-        if pd.isnull(text):
-            continue  # Skip null values
-        for keyword in keywords:
-            appearances = count_keyword_appearances(str(text), keyword)
-            if appearances > 0:
-                keyword_counts_Dom[keyword] += 1
+        for column, text in row.items():  # Iterate through all columns
+            if pd.isnull(text) or column == "Date_of_Enrollment":
+                continue
+            for keyword in keywords:
+                appearances = count_keyword_appearances(str(text), keyword)
+                if appearances > 0:
+                    keyword_counts_by_fiscal_year_Dom[fiscal_year][keyword] += 1
 
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
@@ -117,27 +144,29 @@ file_Divad = 'Divad.csv'
 df_Divad = pd.read_csv(file_Divad)
 
 # Initialize a dictionary to count appearances
-keyword_counts_Divad = {keyword: 0 for keyword in keywords}
+keyword_counts_by_fiscal_year_Divad = {}
 
 # Initialize counter for total number of cases
 total_cases_Divad = 0
 
-# Function to count appearances of a keyword in a row
-def count_keyword_appearances(text, keyword):
-    return len(re.findall(keyword, text, re.IGNORECASE))
+if "Date_of_Enrollment" in df_Divad.columns:
+    for _, row in df_Divad.iterrows():
+        if row.isnull().all():
+            continue  
+        total_cases_Divad += 1
+        date_str = row["Date_of_Enrollment"]
+        if pd.notnull(date_str):
+            fiscal_year = get_fiscal_year(date_str)
+        if fiscal_year not in keyword_counts_by_fiscal_year_Divad:
+            keyword_counts_by_fiscal_year_Divad[fiscal_year] = {keyword: 0 for keyword in keywords}
 
-# Iterate through each row in the dataframe
-for _, row in df_Divad.iterrows():
-    if row.isnull().all():
-        continue  # Skip this row if it's entirely blank
-    total_cases_Divad += 1
-    for column, text in row.items():  # Iterate through all columns
-        if pd.isnull(text):
-            continue  # Skip null values
-        for keyword in keywords:
-            appearances = count_keyword_appearances(str(text), keyword)
-            if appearances > 0:
-                keyword_counts_Divad[keyword] += 1
+        for column, text in row.items():  # Iterate through all columns
+            if pd.isnull(text) or column == "Date_of_Enrollment":
+                continue
+            for keyword in keywords:
+                appearances = count_keyword_appearances(str(text), keyword)
+                if appearances > 0:
+                    keyword_counts_by_fiscal_year_Divad[fiscal_year][keyword] += 1
 
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
@@ -148,27 +177,29 @@ file_Rachelle = 'Rachelle.csv'
 df_Rachelle = pd.read_csv(file_Rachelle)
 
 # Initialize a dictionary to count appearances
-keyword_counts_Rachelle = {keyword: 0 for keyword in keywords}
+keyword_counts_by_fiscal_year_Rachelle = {}
 
 # Initialize counter for total number of cases
 total_cases_Rachelle = 0
 
-# Function to count appearances of a keyword in a row
-def count_keyword_appearances(text, keyword):
-    return len(re.findall(keyword, text, re.IGNORECASE))
+if "Date_of_Enrollment" in df_Rachelle.columns:
+    for _, row in df_Rachelle.iterrows():
+        if row.isnull().all():
+            continue  
+        total_cases_Rachelle += 1
+        date_str = row["Date_of_Enrollment"]
+        if pd.notnull(date_str):
+            fiscal_year = get_fiscal_year(date_str)
+        if fiscal_year not in keyword_counts_by_fiscal_year_Rachelle:
+            keyword_counts_by_fiscal_year_Rachelle[fiscal_year] = {keyword: 0 for keyword in keywords}
 
-# Iterate through each row in the dataframe
-for _, row in df_Rachelle.iterrows():
-    if row.isnull().all():
-        continue  # Skip this row if it's entirely blank
-    total_cases_Rachelle += 1
-    for column, text in row.items():  # Iterate through all columns
-        if pd.isnull(text):
-            continue  # Skip null values
-        for keyword in keywords:
-            appearances = count_keyword_appearances(str(text), keyword)
-            if appearances > 0:
-                keyword_counts_Rachelle[keyword] += 1
+        for column, text in row.items():  # Iterate through all columns
+            if pd.isnull(text) or column == "Date_of_Enrollment":
+                continue
+            for keyword in keywords:
+                appearances = count_keyword_appearances(str(text), keyword)
+                if appearances > 0:
+                    keyword_counts_by_fiscal_year_Rachelle[fiscal_year][keyword] += 1
 
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
@@ -179,27 +210,29 @@ file_Khalid = 'Khalid.csv'
 df_Khalid = pd.read_csv(file_Khalid) 
 
 # Initialize a dictionary to count appearances
-keyword_counts_Khalid = {keyword: 0 for keyword in keywords}
+keyword_counts_by_fiscal_year_Khalid = {}
 
 # Initialize counter for total number of cases
 total_cases_Khalid = 0
 
-# Function to count appearances of a keyword in a row
-def count_keyword_appearances(text, keyword):
-    return len(re.findall(keyword, text, re.IGNORECASE))
+if "Date_of_Enrollment" in df_Khalid.columns:
+    for _, row in df_Khalid.iterrows():
+        if row.isnull().all():
+            continue  
+        total_cases_Khalid += 1
+        date_str = row["Date_of_Enrollment"]
+        if pd.notnull(date_str):
+            fiscal_year = get_fiscal_year(date_str)
+        if fiscal_year not in keyword_counts_by_fiscal_year_Khalid:
+            keyword_counts_by_fiscal_year_Khalid[fiscal_year] = {keyword: 0 for keyword in keywords}
 
-# Iterate through each row in the dataframe
-for _, row in df_Khalid.iterrows():
-    if row.isnull().all():
-        continue  # Skip this row if it's entirely blank
-    total_cases_Khalid += 1
-    for column, text in row.items():  # Iterate through all columns
-        if pd.isnull(text):
-            continue  # Skip null values
-        for keyword in keywords:
-            appearances = count_keyword_appearances(str(text), keyword)
-            if appearances > 0:
-                keyword_counts_Khalid[keyword] += 1
+        for column, text in row.items():  # Iterate through all columns
+            if pd.isnull(text) or column == "Date_of_Enrollment":
+                continue
+            for keyword in keywords:
+                appearances = count_keyword_appearances(str(text), keyword)
+                if appearances > 0:
+                    keyword_counts_by_fiscal_year_Khalid[fiscal_year][keyword] += 1
 
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
@@ -210,27 +243,29 @@ file_Sandy = 'SandyHousing.csv'
 df_Sandy = pd.read_csv(file_Sandy)
 
 # Initialize a dictionary to count appearances
-keyword_counts_Sandy = {keyword: 0 for keyword in keywords}
+keyword_counts_by_fiscal_year_Sandy = {}
 
 # Initialize counter for total number of cases
 total_cases_Sandy = 0
 
-# Function to count appearances of a keyword in a row
-def count_keyword_appearances(text, keyword):
-    return len(re.findall(keyword, text, re.IGNORECASE))
+if "Date_of_Enrollment" in df_Sandy.columns:
+    for _, row in df_Sandy.iterrows():
+        if row.isnull().all():
+            continue  
+        total_cases_Sandy += 1
+        date_str = row["Date_of_Enrollment"]
+        if pd.notnull(date_str):
+            fiscal_year = get_fiscal_year(date_str)
+        if fiscal_year not in keyword_counts_by_fiscal_year_Sandy:
+            keyword_counts_by_fiscal_year_Sandy[fiscal_year] = {keyword: 0 for keyword in keywords}
 
-# Iterate through each row in the dataframe
-for _, row in df_Sandy.iterrows():
-    if row.isnull().all():
-        continue  # Skip this row if it's entirely blank
-    total_cases_Sandy += 1
-    for column, text in row.items():  # Iterate through all columns
-        if pd.isnull(text):
-            continue  # Skip null values
-        for keyword in keywords:
-            appearances = count_keyword_appearances(str(text), keyword)
-            if appearances > 0:
-                keyword_counts_Sandy[keyword] += 1
+        for column, text in row.items():  # Iterate through all columns
+            if pd.isnull(text) or column == "Date_of_Enrollment":
+                continue
+            for keyword in keywords:
+                appearances = count_keyword_appearances(str(text), keyword)
+                if appearances > 0:
+                    keyword_counts_by_fiscal_year_Sandy[fiscal_year][keyword] += 1
 
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
@@ -241,27 +276,29 @@ file_incarcerated = 'Incarcerated_waitlist.csv'
 df_incarcerated = pd.read_csv(file_incarcerated)
 
 # Initialize a dictionary to count appearances
-keyword_counts_incarcerated = {keyword: 0 for keyword in keywords}
+keyword_counts_by_fiscal_year_incarcerated = {}
 
 # Initialize counter for total number of cases
 total_cases_incarcerated = 0
 
-# Function to count appearances of a keyword in a row
-def count_keyword_appearances(text, keyword):
-    return len(re.findall(keyword, text, re.IGNORECASE))
+if "Date_of_Enrollment" in df_incarcerated.columns:
+    for _, row in df_incarcerated.iterrows():
+        if row.isnull().all():
+            continue  
+        total_cases_incarcerated += 1
+        date_str = row["Date_of_Enrollment"]
+        if pd.notnull(date_str):
+            fiscal_year = get_fiscal_year(date_str)
+        if fiscal_year not in keyword_counts_by_fiscal_year_incarcerated:
+            keyword_counts_by_fiscal_year_incarcerated[fiscal_year] = {keyword: 0 for keyword in keywords}
 
-# Iterate through each row in the dataframe
-for _, row in df_incarcerated.iterrows():
-    if row.isnull().all():
-        continue  # Skip this row if it's entirely blank
-    total_cases_incarcerated += 1
-    for column, text in row.items():  # Iterate through all columns
-        if pd.isnull(text):
-            continue  # Skip null values
-        for keyword in keywords:
-            appearances = count_keyword_appearances(str(text), keyword)
-            if appearances > 0:
-                keyword_counts_incarcerated[keyword] += 1
+        for column, text in row.items():  # Iterate through all columns
+            if pd.isnull(text) or column == "Date_of_Enrollment":
+                continue
+            for keyword in keywords:
+                appearances = count_keyword_appearances(str(text), keyword)
+                if appearances > 0:
+                    keyword_counts_by_fiscal_year_incarcerated[fiscal_year][keyword] += 1
 
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
@@ -272,27 +309,29 @@ file_inactive = 'Inactive.csv'
 df_inactive = pd.read_csv(file_inactive)
 
 # Initialize a dictionary to count appearances
-keyword_counts_inactive = {keyword: 0 for keyword in keywords}
+keyword_counts_by_fiscal_year_inactive = {}
 
 # Initialize counter for total number of cases
 total_cases_inactive = 0
 
-# Function to count appearances of a keyword in a row
-def count_keyword_appearances(text, keyword):
-    return len(re.findall(keyword, text, re.IGNORECASE))
+if "Date_of_Enrollment" in df_inactive.columns:
+    for _, row in df_inactive.iterrows():
+        if row.isnull().all():
+            continue  
+        total_cases_inactive += 1
+        date_str = row["Date_of_Enrollment"]
+        if pd.notnull(date_str):
+            fiscal_year = get_fiscal_year(date_str)
+        if fiscal_year not in keyword_counts_by_fiscal_year_inactive:
+            keyword_counts_by_fiscal_year_inactive[fiscal_year] = {keyword: 0 for keyword in keywords}
 
-# Iterate through each row in the dataframe
-for _, row in df_inactive.iterrows():
-    if row.isnull().all():
-        continue  # Skip this row if it's entirely blank
-    total_cases_inactive += 1
-    for column, text in row.items():  # Iterate through all columns
-        if pd.isnull(text):
-            continue  # Skip null values
-        for keyword in keywords:
-            appearances = count_keyword_appearances(str(text), keyword)
-            if appearances > 0:
-                keyword_counts_inactive[keyword] += 1
+        for column, text in row.items():  # Iterate through all columns
+            if pd.isnull(text) or column == "Date_of_Enrollment":
+                continue
+            for keyword in keywords:
+                appearances = count_keyword_appearances(str(text), keyword)
+                if appearances > 0:
+                    keyword_counts_by_fiscal_year_inactive[fiscal_year][keyword] += 1
 
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
@@ -303,110 +342,124 @@ file_lowrisk = 'Low_risk.csv'
 df_lowrisk = pd.read_csv(file_lowrisk) 
 
 # Initialize a dictionary to count appearances
-keyword_counts_low = {keyword: 0 for keyword in keywords}
+keyword_counts_by_fiscal_year_lowrisk = {}
 
 # Initialize counter for total number of cases
-total_cases_low = 0
+total_cases_lowrisk = 0
 
-# Function to count appearances of a keyword in a row
-def count_keyword_appearances(text, keyword):
-    return len(re.findall(keyword, text, re.IGNORECASE))
+if "Date_of_Enrollment" in df_lowrisk.columns:
+    for _, row in df_lowrisk.iterrows():
+        if row.isnull().all():
+            continue  
+        total_cases_lowrisk += 1
+        date_str = row["Date_of_Enrollment"]
+        if pd.notnull(date_str):
+            fiscal_year = get_fiscal_year(date_str)
+        if fiscal_year not in keyword_counts_by_fiscal_year_lowrisk:
+            keyword_counts_by_fiscal_year_lowrisk[fiscal_year] = {keyword: 0 for keyword in keywords}
 
-# Iterate through each row in the dataframe
-for _, row in df_lowrisk.iterrows():
-    if row.isnull().all():
-        continue  # Skip this row if it's entirely blank
-    total_cases_low += 1
-    for column, text in row.items():  # Iterate through all columns
-        if pd.isnull(text):
-            continue  # Skip null values
-        for keyword in keywords:
-            appearances = count_keyword_appearances(str(text), keyword)
-            if appearances > 0:
-                keyword_counts_low[keyword] += 1
+        for column, text in row.items():  # Iterate through all columns
+            if pd.isnull(text) or column == "Date_of_Enrollment":
+                continue
+            for keyword in keywords:
+                appearances = count_keyword_appearances(str(text), keyword)
+                if appearances > 0:
+                    keyword_counts_by_fiscal_year_lowrisk[fiscal_year][keyword] += 1
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
 
 print("Summary" + "\n")
 
-#count number of appearances of keywords in different tables
-print("-----In New Registration-----" + "\n")
-for keyword, count in keyword_counts_new.items():
-    print(f"{keyword} found {count}" + "\n")
+datasets = {
+    "New Registration": keyword_counts_by_fiscal_year_new,
+    "Robert": keyword_counts_by_fiscal_year_Rob,
+    "Dominique": keyword_counts_by_fiscal_year_Dom,  
+    "Divad": keyword_counts_by_fiscal_year_Divad,  
+    "Rachelle": keyword_counts_by_fiscal_year_Rachelle,  
+    "Khalid": keyword_counts_by_fiscal_year_Khalid,  
+    "SandyHousing": keyword_counts_by_fiscal_year_Sandy,  
+    "Incarcerated_waitlist": keyword_counts_by_fiscal_year_incarcerated,  
+    "Inactive": keyword_counts_by_fiscal_year_inactive,  
+    "Low_risk": keyword_counts_by_fiscal_year_lowrisk
+}
 
-print("-----Robert-----" + "\n")
-for keyword, count in keyword_counts_Rob.items():
-    print(f"{keyword} found {count}" + "\n")
+for dataset_name, data in datasets.items():
+    print(f"-----------------{dataset_name}----------------\n")
+    for fiscal_year, counts in data.items():
+        print(f"In {fiscal_year}:\n")  # Indicate the fiscal year
+        for keyword, count in counts.items():
+            print(f"{keyword} found {count}\n")
 
-print("-----Dominique-----" + "\n")
-for keyword, count in keyword_counts_Dom.items():
-    print(f"{keyword} found {count}" + "\n")
 
-print("-----Divad-----" + "\n")
-for keyword, count in keyword_counts_Divad.items():
-    print(f"{keyword} found {count}" + "\n")
+print("--------------------------------------------------------------------------------" + "\n")
+# count numbers for requested client questions in fiscal year format
+total_counts_by_fiscal_year = {}
 
-print("-----Rachelle-----" + "\n")
-for keyword, count in keyword_counts_Rachelle.items():
-    print(f"{keyword} found {count}" + "\n")
+# Iterate through each dataset's fiscal year data
+for data in datasets.values():
+    for fiscal_year, counts in data.items():
+       
+        if fiscal_year not in total_counts_by_fiscal_year:
+            total_counts_by_fiscal_year[fiscal_year] = {keyword: 0 for keyword in keywords}
+        
+        # Add the counts from this dataset and fiscal year to the total
+        for keyword, count in counts.items():
+            total_counts_by_fiscal_year[fiscal_year][keyword] += count
 
-print("-----Khalid-----" + "\n")
-for keyword, count in keyword_counts_Khalid.items():
-    print(f"{keyword} found {count}" + "\n")
+for fiscal_year, counts in total_counts_by_fiscal_year.items():
+    print(f"In {fiscal_year}:\n")
+    for keyword, total in counts.items():
+        print(f"The total number of people that ORC helped in {keyword} is {total}\n")
 
-print("-----SandyHousing-----" + "\n")
-for keyword, count in keyword_counts_Sandy.items():
-    print(f"{keyword} found {count}" + "\n")
+print("--------------------------------------------------------------------------------" + "\n")
 
-print("-----Incarcerated_waitlist-----" + "\n")
-for keyword, count in keyword_counts_incarcerated.items():
-    print(f"{keyword} found {count}" + "\n")
+#total number of cases (grand total)
+total_cases = total_cases_new + total_cases_Rob + total_cases_Dom + total_cases_Divad + total_cases_Rachelle + total_cases_Khalid + total_cases_Sandy + total_cases_incarcerated + total_cases_inactive + total_cases_lowrisk
+print(f"The total number of cases (grand total) is {total_cases}" + "\n")
 
-print("-----Inactive-----" + "\n")
-for keyword, count in keyword_counts_inactive.items():
-    print(f"{keyword} found {count}" + "\n")
+print("--------------------------------------------------------------------------------" + "\n")
 
-print("-----Low_risk-----" + "\n")
-for keyword, count in keyword_counts_low.items():
-    print(f"{keyword} found {count}" + "\n")
+#some percentages in fiscal year format
+total_cases_by_fiscal_year = {}
 
-print("-------------------------------------------------" + "\n")
-# count numbers for requested client questions 
-keyword_counts_list = [keyword_counts_new, keyword_counts_Rob, keyword_counts_Dom, keyword_counts_Divad, keyword_counts_Rachelle, keyword_counts_Khalid, keyword_counts_Sandy, keyword_counts_incarcerated, keyword_counts_inactive, keyword_counts_low]
+datasets = [df_new, df_Robert, df_Dom, df_Divad, df_Rachelle, df_Khalid, df_Sandy, df_incarcerated, df_inactive, df_lowrisk]
 
-total_counts = {keyword: 0 for keyword in keyword_counts_new}
+for dataset in datasets:
+    for _, row in dataset.iterrows():
+        date_str = row.get('Date_of_Enrollment')
+        # Check if 'Date_of_Enrollment' is not blank and valid
+        if pd.notnull(date_str):
+            fiscal_year = get_fiscal_year(date_str)
+            if fiscal_year not in total_cases_by_fiscal_year:
+                total_cases_by_fiscal_year[fiscal_year] = 0
+            total_cases_by_fiscal_year[fiscal_year] += 1
 
-for counts in keyword_counts_list:
-    for keyword, count in counts.items():
-        total_counts[keyword] += count
-
-for keyword, total in total_counts.items():
-    print(f"The total number of people that ORC helped in {keyword} is {total}" + "\n")
-
-print("-------------------------------------------------" + "\n")
-
-#total number of cases
-total_cases = total_cases_new + total_cases_Rob + total_cases_Dom + total_cases_Divad + total_cases_Rachelle + total_cases_Khalid + total_cases_Sandy + total_cases_incarcerated + total_cases_inactive + total_cases_low
-print(f"The total number of cases is {total_cases}" + "\n")
-
-print("-------------------------------------------------" + "\n")
-
-#some percentages
-for keyword, total in total_counts.items():
-    percentage = round(total/float(total_cases) * 100, 5)
-    print(f"The percentage of {keyword} is {percentage}%" + "\n")
-
+for fiscal_year, counts in total_counts_by_fiscal_year.items():
+    print(f"In {fiscal_year}:\n")
+    total_cases = total_cases_by_fiscal_year.get(fiscal_year, 0)  # Use .get() to default to 0 if the fiscal year isn't found
+    if total_cases > 0:  # Only proceed if there are cases for the fiscal year
+        for keyword in keywords:
+            total = counts.get(keyword, 0)  # Get the count for the keyword, defaulting to 0
+            percentage = (total / float(total_cases)) * 100
+            print(f"The percentage of {keyword} in {fiscal_year} is {percentage:.2f}%\n")
+    else:
+        print(f"No cases found for {fiscal_year}.\n")
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
 
-#create a graph for visualization
-plt.figure(figsize=(10, 8)) 
-plt.bar(list(total_counts.keys()), list(total_counts.values()), color='skyblue')
+#create graphs in fiscal year format for visualization
+for fiscal_year, counts in total_counts_by_fiscal_year.items():
+    plt.figure(figsize=(10, 8)) 
+    # Extracting keywords and their counts for the fiscal year
+    keywords = list(counts.keys())
+    keyword_counts = list(counts.values())
+    
+    plt.bar(keywords, keyword_counts, color='skyblue')
+    
+    plt.title(f'Total Number of Keyword Appearances in {fiscal_year}')
+    plt.xlabel('Keywords')
+    plt.ylabel('Counts')
+    plt.xticks(rotation=45, ha="right")
 
-plt.title('Total Number of Keyword Appearances')
-plt.xlabel('Keywords')
-plt.ylabel('Counts')
-plt.xticks(rotation=45, ha="right")
-
-plt.tight_layout()
-plt.show()
+    plt.tight_layout()
+    plt.show()
