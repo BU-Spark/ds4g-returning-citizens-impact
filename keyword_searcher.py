@@ -14,7 +14,7 @@ from datetime import datetime
    \ /
     V
 """
-keywords = ['working credit', 'working families', 'greater boston legal services', 'lawyers clearing hous', 'prophetic resistance', 'CORI', 'case'] 
+keywords = ['working credit'] 
 
 
 #NO NEED TO CHANGE CODES BELOW
@@ -446,7 +446,7 @@ for fiscal_year, counts in total_counts_by_fiscal_year.items():
         print(f"No cases found for {fiscal_year}.\n")
 
 """-------------------------------------------------------------------------------------------------------------------------------------------------------"""
-
+"""
 #create graphs in fiscal year format for visualization
 for fiscal_year, counts in total_counts_by_fiscal_year.items():
     plt.figure(figsize=(10, 8)) 
@@ -454,12 +454,77 @@ for fiscal_year, counts in total_counts_by_fiscal_year.items():
     keywords = list(counts.keys())
     keyword_counts = list(counts.values())
     
-    plt.bar(keywords, keyword_counts, color='skyblue')
+    #plt.bar(keywords, keyword_counts, color='skyblue')
+    bar_width = 0.5
+    if len(keywords) == 1:
+        plt.xlim(-3, 3) 
+
+    bars = plt.bar(keywords, keyword_counts, color='skyblue', width=bar_width)
     
     plt.title(f'Total Number of Keyword Appearances in {fiscal_year}')
     plt.xlabel('Keywords')
     plt.ylabel('Counts')
-    plt.xticks(rotation=45, ha="right")
+    if len(keywords) > 1:
+        plt.xticks(rotation=45, ha="right")
+
+    # Annotate bars with their counts
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2, yval, int(yval), ha='center', va='bottom')
+
 
     plt.tight_layout()
     plt.show()
+"""
+
+import matplotlib.pyplot as plt
+
+# Check if there's only one keyword across all fiscal years
+all_keywords = set()
+for counts in total_counts_by_fiscal_year.values():
+    all_keywords.update(counts.keys())
+
+if len(all_keywords) == 1:
+    # There's only one keyword, so plot it across all fiscal years
+    single_keyword = all_keywords.pop()
+    fiscal_years = list(total_counts_by_fiscal_year.keys())
+    keyword_counts_over_time = [total_counts_by_fiscal_year[year].get(single_keyword, 0) for year in fiscal_years]
+
+    plt.figure(figsize=(10, 8))
+    bars = plt.bar(fiscal_years, keyword_counts_over_time, color='skyblue', width=0.2)
+    
+    plt.title(f'Total Appearances of {single_keyword} Over Fiscal Years')
+    plt.xlabel('Fiscal Years')
+    plt.ylabel('Counts')
+
+    # Annotate bars with their counts
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2, yval, int(yval), ha='center', va='bottom')
+
+    plt.tight_layout()
+    plt.show()
+else:
+    # There are multiple keywords, proceed with the existing per-fiscal-year plotting
+    for fiscal_year, counts in total_counts_by_fiscal_year.items():
+        plt.figure(figsize=(10, 8))
+        keywords = list(counts.keys())
+        keyword_counts = list(counts.values())
+        
+        bar_width = 0.5
+        bars = plt.bar(keywords, keyword_counts, color='skyblue', width=bar_width)
+
+        # Set x-limits with additional padding if there's only one keyword
+       
+        plt.title(f'Total Number of Keyword Appearances in {fiscal_year}')
+        plt.xlabel('Keywords')
+        plt.ylabel('Counts')
+        plt.xticks(rotation=45, ha="right")
+
+        # Annotate bars with their counts
+        for bar in bars:
+            yval = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width()/2, yval, int(yval), ha='center', va='bottom')
+        
+        plt.tight_layout()
+        plt.show()
