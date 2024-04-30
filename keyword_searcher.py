@@ -13,8 +13,9 @@ from datetime import datetime
     |
    \ /
     V
+    
 """
-keywords = ['working credit'] 
+keywords = ["cori"] 
 
 
 #NO NEED TO CHANGE CODES BELOW
@@ -437,7 +438,8 @@ for dataset in datasets:
 for fiscal_year, counts in total_counts_by_fiscal_year.items():
     print(f"In {fiscal_year}:\n")
     total_cases = total_cases_by_fiscal_year.get(fiscal_year, 0)  # Use .get() to default to 0 if the fiscal year isn't found
-    if total_cases > 0:  # Only proceed if there are cases for the fiscal year
+    if total_cases > 0:  
+        print(f"The total number of cases in {fiscal_year} is {total_cases}\n")
         for keyword in keywords:
             total = counts.get(keyword, 0)  # Get the count for the keyword, defaulting to 0
             percentage = (total / float(total_cases)) * 100
@@ -476,7 +478,6 @@ else:
         plt.figure(figsize=(10, 8))
         keywords = list(counts.keys())
         keyword_counts = list(counts.values())
-        
         
         bar_width = len(keywords)/10
         bars = plt.bar(keywords, keyword_counts, color='skyblue', width=bar_width)
