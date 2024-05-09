@@ -13,9 +13,12 @@ This project aims to analyze the impact of the Mayor's Office of Returning Citiz
 The analysis will be used for the annual impact report submitted to the Mayor's office, informing budget allocation for the upcoming fiscal year.
 
 Key Objectives:
+
 ● Evaluate the impact of the ORC's services on returning citizens in terms of
 housing, employment, legal assistance, social services, and more.
+
 ● Identify service disparities to improve equitable access and effectiveness of the
 programs offered.
+
 ● Inform budgeting decisions for the upcoming fiscal year based on demonstrated
 impact and needs.
