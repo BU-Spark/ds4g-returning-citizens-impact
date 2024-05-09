@@ -22,3 +22,9 @@ programs offered.
 
 ● Inform budgeting decisions for the upcoming fiscal year based on demonstrated
 impact and needs.
+
+# Technical architecture
+Program "keyword_searcher.py" and "searcher_2.0.py" are the main searcher codes. Instructions on how to use them can be found in "keyword_searcher.py". Basically we iterate over all the text files provided by ORC and look for appearances of keywords. Count them for statistics, and elimating any potential wrong counts by excluding some keywords, this function can be achieved in "searcher_2.0.py". To use the python files, pull the branch and run the folder vis VSCode, and follow instructions inside.
+
+# Bugs or Issues
+Currently we do not have bugs. But if in the future one will pick up our project, please design more powerful searching programs that can deal with more context matching problems. We did not achieve that due to time limit.
